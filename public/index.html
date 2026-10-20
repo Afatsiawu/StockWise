@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StockWise · Inventory &amp; Stock Decisions</title>
+    <meta
+      name="description"
+      content="Inventory and stock decision-support system for a small electronics retailer."
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f46e5'/%3E%3Cpath d='M8 21V11h4v10H8Zm6 0V7h4v14h-4Zm6 0v-7h4v7h-4Z' fill='white'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <a class="skip-link" href="#view">Skip to content</a>
+    <div class="app">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="26" height="26">
+              <rect width="32" height="32" rx="8" fill="#4f46e5" />
+              <path d="M8 21V11h4v10H8Zm6 0V7h4v14h-4Zm6 0v-7h4v7h-4Z" fill="white" />
+            </svg>
+          </span>
+          <div>
+            <strong>StockWise</strong>
+            <small>Decision support</small>
+          </div>
+        </div>
+        <nav id="nav">
+          <a href="#/dashboard" data-route="dashboard">
+            <span class="icon" aria-hidden="true">◫</span> Dashboard
+          </a>
+          <a href="#/products" data-route="products">
+            <span class="icon" aria-hidden="true">▦</span> Products
+          </a>
+          <a href="#/sales" data-route="sales">
+            <span class="icon" aria-hidden="true">₪</span> Sales
+          </a>
+          <a href="#/analytics" data-route="analytics">
+            <span class="icon" aria-hidden="true">◔</span> Analytics
+          </a>
+          <a href="#/reorder" data-route="reorder">
+            <span class="icon" aria-hidden="true">↻</span> Reorder
+          </a>
+          <a href="#/suppliers" data-route="suppliers">
+            <span class="icon" aria-hidden="true">⛬</span> Suppliers
+          </a>
+        </nav>
+        <div class="sidebar-foot">
+          <button class="ghost-button light" id="settings-button" type="button">⚙ Policy settings</button>
+          <p class="tiny">Demo shop · electronics &amp; accessories</p>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-context">
+            <span class="pill" id="data-through">Data loading…</span>
+          </div>
+          <div class="topbar-actions">
+            <label class="window-picker">
+              <span>Window</span>
+              <select id="window-select" aria-label="Analysis window">
+                <option value="30">30 days</option>
+                <option value="60">60 days</option>
+                <option value="90" selected>90 days</option>
+                <option value="180">180 days</option>
+                <option value="365">365 days</option>
+              </select>
+            </label>
+            <button class="ghost-button" id="refresh-button" type="button">⟳ Refresh</button>
+          </div>
+        </header>
+        <main id="view" tabindex="-1" aria-live="polite"></main>
+      </div>
+    </div>
+
+    <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+    <div id="modal-root"></div>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>
