@@ -57,7 +57,7 @@ const SUPPLIERS: SupplierSpec[] = [
     email: 'orders@auramobile.co.za',
     phone: '+27 11 465 8820',
     leadTimeDays: 10,
-    notes: 'Main smartphone distributor. Free delivery over R25 000. No returns on opened stock.',
+    notes: 'Main smartphone distributor. Free delivery over GH₵25,000. No returns on opened stock.',
   },
   {
     key: 'soundwave',

@@ -19,7 +19,7 @@ imperative transactional shell around a pure functional decision core. It is tes
 automated tests covering the inventory mathematics, forecasting edge cases, ABC classification,
 transaction rollback, and the HTTP API. On a simulated 18-month dataset (28 SKUs, 6 suppliers,
 6 641 invoices), the system identifies nine A-items that produce 79% of revenue,flags five critical stock positions (three shelves already empty) that the current process would
-discover only when a customer asks, and produces a R165 480 purchase plan justified by demand, lead time and variability. Forecast error on held-out
+discover only when a customer asks, and produces a GH₵165,480 purchase plan justified by demand, lead time and variability. Forecast error on held-out
 weeks averages 27% across sellable products, and is below 16% for the flat, high-volume lines.
 
 ---
@@ -58,7 +58,7 @@ Derived from the brief and the investigation:
 
 ### 1.4 Scope
 
-**In scope:** single shop, single currency (ZAR), product/supplier/sales management, stock ledger,
+**In scope:** single shop, single currency (GHS), product/supplier/sales management, stock ledger,
 analytics, forecasting, reorder planning, policy configuration, responsive browser UI.
 **Out of scope:** point-of-sale hardware, barcode scanning, customer accounts, creditors ledger,
 multi-branch synchronisation, authentication, e-commerce integration.
@@ -82,7 +82,7 @@ The full method, process maps and interview instrument are in
 
 The reconstructed 18-month ledger quantifies the status quo: **171 units of demand lost to empty
 shelves**, **3 of 28 products out of stock at the end of the period (11 at or below their reorder
-point)**, and **R360 of stock that sold nothing in 90 days**.
+point)**, and **GH₵360 of stock that sold nothing in 90 days**.
 
 ---
 
@@ -179,11 +179,11 @@ All figures are from the seeded demo database (`npm start`), trading data throug
 
 | KPI | Value |
 | --- | --- |
-| Stock on hand | R273 107 · 540 units · 28 SKUs |
-| Revenue (30 days) | R928 994, **+17.2%** vs previous 30 days |
-| Gross margin (30 days) | 35.2% (R326 936 gross profit) |
+| Stock on hand | GH₵273,107 · 540 units · 28 SKUs |
+| Revenue (30 days) | GH₵928,994, **+17.2%** vs previous 30 days |
+| Gross margin (30 days) | 35.2% (GH₵326,936 gross profit) |
 | Stock alerts | 14 (5 critical, 6 reorder, 3 watch) |
-| Suggested order value | R165 480 |
+| Suggested order value | GH₵165,480 |
 
 ### 6.2 Movement analysis
 
@@ -194,7 +194,7 @@ All figures are from the seeded demo database (`npm start`), trading data throug
 | A / B / C items | 9 / 8 / 11 |
 | Revenue concentration | **9 A-items (32% of the range) = 79% of revenue** |
 | Fastest movers | USB-C cable 1 m (6.2/day), USB-C cable 2 m (4.3/day), screen protector (2.8/day) |
-| Dead stock | 1 SKU, 8 units, R360 — the discontinued Nimbus A3 case |
+| Dead stock | 1 SKU, 8 units, GH₵360 — the discontinued Nimbus A3 case |
 | Revenue by category | Phones 55%, Audio 21%, Charging 12%, Cables 5%, Storage 4%, Wearables 3%, Accessories 0.5% |
 
 This is exactly the insight the notebook cannot provide: the shop's cash is concentrated in phones,
@@ -227,16 +227,16 @@ pretending one error rate applies to everything.
 
 | Supplier | Lines | Value | Lead time |
 | --- | --- | --- | --- |
-| Aura Mobile Distribution | 4 | R89 900 | 10 days |
-| SoundWave Imports | 3 | R57 190 | 14 days |
-| FitGear Africa | 1 | R13 440 | 12 days |
-| CableLink Wholesale | 1 | R2 830 | 3 days |
-| WattWorks SA | 1 | R1 170 | 5 days |
-| DataStore Supplies | 1 | R950 | 7 days |
+| Aura Mobile Distribution | 4 | GH₵89,900 | 10 days |
+| SoundWave Imports | 3 | GH₵57,190 | 14 days |
+| FitGear Africa | 1 | GH₵13,440 | 12 days |
+| CableLink Wholesale | 1 | GH₵2,830 | 3 days |
+| WattWorks SA | 1 | GH₵1,170 | 5 days |
+| DataStore Supplies | 1 | GH₵950 | 7 days |
 
 Five critical items are already out of stock or inside their safety stock — including the two
 best-selling audio and cable lines. The recommendation for `PulseBuds Pro` is 58 units
-(R45 240) because demand is 2.2/day, the lead time is 14 days and the forecast is reliable
+(GH₵45,240) because demand is 2.2/day, the lead time is 14 days and the forecast is reliable
 (13% backtest error); the recommendation for the discontinued case is zero.
 
 ### 6.5 Transactional integrity

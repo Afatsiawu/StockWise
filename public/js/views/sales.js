@@ -52,7 +52,7 @@ export async function render(container, ctx) {
         <form id="sale-form">
           <div class="line-items" id="line-items"></div>
           <button type="button" class="ghost-button" id="add-line">+ Add line</button>
-          <div class="sale-total"><span>Total</span><span id="sale-total">R 0.00</span></div>
+          <div class="sale-total"><span>Total</span><span id="sale-total">GH₵ 0.00</span></div>
           <div class="form-grid">
             <div class="field">
               <label for="customerName">Customer (optional)</label>

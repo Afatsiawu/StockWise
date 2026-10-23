@@ -1,6 +1,6 @@
 /** Display helpers. Money arrives from the API as integer cents. */
 
-let currencySymbol = 'R';
+let currencySymbol = 'GH₵';
 
 export function setCurrency(symbol) {
   if (symbol) currencySymbol = symbol;
@@ -10,12 +10,12 @@ export function money(cents) {
   if (cents === null || cents === undefined || Number.isNaN(cents)) return '—';
   const negative = cents < 0;
   const absolute = Math.abs(Math.round(cents));
-  const whole = Math.floor(absolute / 100).toLocaleString('en-ZA');
+  const whole = Math.floor(absolute / 100).toLocaleString('en-GH');
   const fraction = String(absolute % 100).padStart(2, '0');
   return `${negative ? '-' : ''}${currencySymbol} ${whole}.${fraction}`;
 }
 
-/** Compact money for KPI tiles: R 1.2m / R 84.3k. */
+/** Compact money for KPI tiles: GH₵ 1.2m / GH₵ 84.3k. */
 export function moneyCompact(cents) {
   if (cents === null || cents === undefined || Number.isNaN(cents)) return '—';
   const sign = cents < 0 ? '-' : '';
@@ -64,9 +64,9 @@ export function coverDays(position) {
   return days(position.daysOfCover);
 }
 
-const DATE = new Intl.DateTimeFormat('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
-const DATE_SHORT = new Intl.DateTimeFormat('en-ZA', { day: 'numeric', month: 'short' });
-const DATE_TIME = new Intl.DateTimeFormat('en-ZA', {
+const DATE = new Intl.DateTimeFormat('en-GH', { day: 'numeric', month: 'short', year: 'numeric' });
+const DATE_SHORT = new Intl.DateTimeFormat('en-GH', { day: 'numeric', month: 'short' });
+const DATE_TIME = new Intl.DateTimeFormat('en-GH', {
   day: 'numeric',
   month: 'short',
   year: 'numeric',

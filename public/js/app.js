@@ -111,7 +111,7 @@ function openSettingsModal() {
     orderCostCents: 15000,
     holdingRatePct: 22,
     defaultLeadTimeDays: 7,
-    currency: 'R',
+    currency: 'GH₵',
   };
   openModal({
     title: 'Policy settings',
@@ -141,7 +141,7 @@ function openSettingsModal() {
             <input id="reviewPeriodDays" name="reviewPeriodDays" type="number" min="1" max="60" value="${settings.reviewPeriodDays}" />
           </div>
           <div class="field">
-            <label for="orderCost">Cost per order (R)</label>
+            <label for="orderCost">Cost per order (${settings.currency})</label>
             <input id="orderCost" name="orderCost" type="number" min="0" step="0.01" value="${(settings.orderCostCents / 100).toFixed(2)}" />
           </div>
           <div class="field">
@@ -176,7 +176,7 @@ function openSettingsModal() {
             orderCostCents: Math.round(Number(form.orderCost.value) * 100),
             holdingRatePct: Number(form.holdingRatePct.value),
             defaultLeadTimeDays: Number(form.defaultLeadTimeDays.value),
-            currency: form.currency.value || 'R',
+            currency: form.currency.value || 'GH₵',
           });
           state.settings = updated;
           setCurrency(updated.currency);

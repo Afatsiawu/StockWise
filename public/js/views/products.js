@@ -27,7 +27,7 @@ import {
 } from '../format.js';
 import { demandChart, stockProjectionChart } from '../charts.js';
 
-const randToCents = (value) => Math.round(Number(value || 0) * 100);
+const majorToCents = (value) => Math.round(Number(value || 0) * 100);
 
 export async function renderList(container, ctx) {
   container.innerHTML = pageHead({
@@ -214,8 +214,8 @@ function openProductModal({ suppliers, categories, onSaved, product }) {
           name: values.name,
           category: values.category,
           supplierId: values.supplierId ? Number(values.supplierId) : null,
-          unitCostCents: randToCents(values.unitCost),
-          unitPriceCents: randToCents(values.unitPrice),
+          unitCostCents: majorToCents(values.unitCost),
+          unitPriceCents: majorToCents(values.unitPrice),
           packSize: Number(values.packSize || 1),
         };
         if (editing) payload.isActive = values.isActive === 'true';
@@ -248,7 +248,7 @@ export async function renderDetail(container, ctx, productId) {
   }
 
   const { product, decision, chart } = insight;
-  setCurrency(ctx.settings?.currency ?? 'R');
+  setCurrency(ctx.settings?.currency ?? 'GH₵');
   const position = decision.position;
   const orderValue = decision.order.recommendedUnits * product.unitCostCents;
   const urgent = ['critical', 'reorder'].includes(position.urgency);
@@ -510,7 +510,7 @@ function openStockModal({ product, mode, onSaved }) {
           note: values.note || null,
         };
         if (isPurchase) {
-          payload.unitCostCents = randToCents(values.unitCost);
+          payload.unitCostCents = majorToCents(values.unitCost);
           payload.reference = values.reference || null;
         }
         const submit = form.querySelector('button[type="submit"]');

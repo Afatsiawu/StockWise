@@ -85,7 +85,7 @@ notion of lead time, and no separation between fast and slow items.
 ### 4.1 What the records show
 
 Reconstructing 18 months of trading into a consistent ledger (540 days, 28 products, 6 suppliers,
-6 641 invoices, 21 395 units, R13.1 million revenue, 36.6% gross margin) produced the following
+6 641 invoices, 21 395 units, GH₵13.1 million revenue, 36.6% gross margin) produced the following
 baseline:
 
 | Measure | Value | What it means |
@@ -94,9 +94,9 @@ baseline:
 | Products out of stock at the end of the period | **3 of 28** | Both best-selling audio lines and the top-selling cable |
 | Products at or below their reorder point right now | **11 of 28** | Five are already critical; the next stockouts are visible |
 | Fastest movers with less than one week of cover | **2 of the top 5** | The shop runs out of exactly what pays the rent |
-| Capital sitting in products that sold nothing in 90 days | **R360** | Small here, but it is 8 units of an obsolete phone case |
-| Stock value on hand | **R273 107** | Cash that could be in the bank |
-| Purchase value the policy would release this week | **R165 480** | What an informed order looks like |
+| Capital sitting in products that sold nothing in 90 days | **GH₵360** | Small here, but it is 8 units of an obsolete phone case |
+| Stock value on hand | **GH₵273,107** | Cash that could be in the bank |
+| Purchase value the policy would release this week | **GH₵165,480** | What an informed order looks like |
 
 ### 4.2 Where the process breaks
 
@@ -106,7 +106,7 @@ baseline:
 | F2 | No record of demand that could not be served | A sale that does not happen is not written down | The best-selling items look *less* important than they are; stockouts repeat |
 | F3 | Reorder decisions are memory-based and fixed-quantity | "Order the usual amount" | Popular items run out; slow items accumulate |
 | F4 | Lead times are not part of the decision | Supplier lead time is known informally, never written down | Orders are placed too late for 10–14 day suppliers |
-| F5 | No separation of A/B/C items | Same attention to a R8 500 phone and a R89 cable | Shelf space and cash are allocated by habit |
+| F5 | No separation of A/B/C items | Same attention to a GH₵8,500 phone and a GH₵89 cable | Shelf space and cash are allocated by habit |
 | F6 | Sales data is aggregated too early | Daily totals only, no per-product history | No trend, seasonality or weekday pattern can be seen |
 | F7 | Prices and costs live in different places | Cost on invoices, price on the shelf, margin in the owner's head | Margin erosion goes unnoticed |
 | F8 | Orders are informal WhatsApp messages | No purchase order number, no expected date | Deliveries cannot be matched to orders, disputes are unresolvable |
@@ -231,7 +231,7 @@ Use this for your own visit; 30–40 minutes, owner plus one counter person.
 15. Which numbers do you trust, and which do you not?
 16. What would you do with a reliable forecast of next month's sales?
 17. Is there anything that would stop you using a system like this at the counter?
-18. What does a "good" week look like in rands and in units?
+18. What does a "good" week look like in cedis and in units?
 
 **E. Observation checklist**
 

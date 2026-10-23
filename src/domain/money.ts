@@ -17,11 +17,11 @@ export function toMajorUnits(cents: Cents): number {
   return Math.round(cents) / 100;
 }
 
-/** Format for display, e.g. 129900 -> "R 1 299.00" (South African Rand). */
-export function formatMoney(cents: Cents, currency = 'R'): string {
+/** Format for display, e.g. 129900 -> "GH₵ 1,299.00" (Ghanaian Cedi). */
+export function formatMoney(cents: Cents, currency = 'GH₵'): string {
   const negative = cents < 0;
   const absolute = Math.abs(Math.round(cents));
-  const whole = Math.floor(absolute / 100).toLocaleString('en-ZA');
+  const whole = Math.floor(absolute / 100).toLocaleString('en-GH');
   const fraction = String(absolute % 100).padStart(2, '0');
   return `${negative ? '-' : ''}${currency} ${whole}.${fraction}`;
 }

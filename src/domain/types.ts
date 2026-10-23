@@ -92,10 +92,10 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   reviewPeriodDays: 7,
   serviceLevelZ: 1.65, // ~95% cycle service level
-  orderCostCents: 15000, // R150 per purchase order placed
+  orderCostCents: 15000, // GH₵150 per purchase order placed
   holdingRatePct: 22, // 22% of unit cost per year (capital, storage, obsolescence)
   defaultLeadTimeDays: 7,
-  currency: 'R',
+  currency: 'GH₵',
 };
 
 export class ApiError extends Error {

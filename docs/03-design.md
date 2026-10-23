@@ -211,7 +211,7 @@ Constants and defaults (editable at runtime):
 | --- | --- | --- |
 | `serviceLevelZ` | 1.65 | ≈95% cycle service level |
 | `reviewPeriodDays` | 7 | The owner orders roughly weekly |
-| `orderCostCents` | R150 | Admin + transport + handling per purchase order |
+| `orderCostCents` | GH₵150 | Admin + transport + handling per purchase order |
 | `holdingRatePct` | 22% p.a. | Capital, storage, obsolescence |
 | `defaultLeadTimeDays` | 7 | Only used when a product has no supplier |
 
@@ -239,7 +239,7 @@ Constants and defaults (editable at runtime):
 | Reorder point | 4.33 × 3 + 7 = **20 units** (rounded) |
 | Order-up-to level | 4.33 × (3 + 7) + 7 = **50 units** |
 | On hand | 26 units → cover 6 days → above ROP → **healthy, order 0** |
-| If stock fell to 19 | Trigger fires; order `50 − 19 = 31` → pack of 5 → **35 units**, ≈ R1 575 |
+| If stock fell to 19 | Trigger fires; order `50 − 19 = 31` → pack of 5 → **35 units**, ≈ GH₵1,575 |
 | EOQ (advice) | √(2 × 1 580 × 15 000 ÷ (4 500 × 0.22)) ≈ **219 units** — reported, not ordered, because it would tie up four months of cash |
 
 ---
@@ -277,8 +277,8 @@ below 15%; sparse or declining items are 30–50% and are labelled medium/low co
   A-items are where cash and shelf space should be protected.
 - **Velocity by percentile** of units/day across the range: ≥75th = fast, ≤25th = slow, zero
   sales = dead. Percentiles adapt to the size of the business instead of a hard-coded threshold.
-- Both labels are shown together because they answer different questions: a R8 500 phone can be an
-  A item by revenue while selling less than one unit a day; a R89 cable can be fast but C.
+- Both labels are shown together because they answer different questions: a GH₵8,500 phone can be an
+  A item by revenue while selling less than one unit a day; a GH₵89 cable can be fast but C.
 
 ---
 
@@ -328,7 +328,7 @@ Statuses used: `400` validation, `404` not found, `405` wrong method, `409` busi
 | Supplier | name ≥2, unique; email format; lead time 0–180 integer |
 | Sale | ≥1 line, ≤100 lines; quantity integer >0; product active and exists; price integer ≥0; payment in the four methods; soldAt valid ISO and not in the future; stock re-checked under lock |
 | Stock movement | kind purchase/return/adjustment; quantity integer ≠0; purchases/returns positive; result may not go negative |
-| Settings | z 0–3.5, review 1–60, order cost 0–R10 000, holding 0–100%, lead time 0–180 |
+| Settings | z 0–3.5, review 1–60, order cost 0–GH₵10,000, holding 0–100%, lead time 0–180 |
 | Request | JSON ≤1 MB; malformed JSON → 400 |
 
 ---

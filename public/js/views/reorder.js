@@ -251,7 +251,7 @@ function openPolicyModal(settings, ctx) {
             <span class="hint">How often you place orders.</span>
           </div>
           <div class="field">
-            <label for="orderCost">Cost per order (R)</label>
+            <label for="orderCost">Cost per order (${settings.currency})</label>
             <input id="orderCost" name="orderCost" type="number" min="0" step="0.01" value="${(settings.orderCostCents / 100).toFixed(2)}" />
             <span class="hint">Admin, transport, handling.</span>
           </div>
