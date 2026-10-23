@@ -37,6 +37,34 @@ DB_PATH=./data/other.db npm start
 
 ---
 
+## Deploying to Render
+
+The repo ships a **`render.yaml`** Blueprint, so no manual dashboard configuration is needed:
+
+1. Push the repository to GitHub.
+2. In Render: **New → Blueprint →** select the repo. Render reads `render.yaml` and creates the
+   service with the build command, start command, health check and environment below.
+3. First deploy seeds the database automatically (~200 ms) and goes live at
+   `https://<service-name>.onrender.com`.
+
+What the Blueprint sets:
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| Build | `npm ci --include=dev && npm run build` | Reproducible install from the lockfile; `--include=dev` keeps TypeScript available for the build |
+| Start | `npm start` | Runs `node dist/src/main.js`; binds `0.0.0.0` on Render's `PORT` |
+| Health check | `/api/health` | Returns 200 once the database is open |
+| Node version | `24.x` (bounded `engines.node: ">=24 <25"`) | `node:sqlite` needs Node 24; the upper bound stops Render silently moving to a future major |
+| `NODE_ENV` | `production` | Set *as a service env var*, but dev deps stay installed because of `--include=dev` |
+
+**Data on the free plan:** the filesystem is ephemeral — the SQLite file is lost on every
+redeploy, restart or 15-minute spin-down. This is not an error: the app re-seeds the full demo
+database on next boot (~200 ms). To keep data permanently, upgrade to a paid instance, attach a
+Disk (e.g. mounted at `/var/data`), and set `DB_PATH=/var/data/stockwise.db` in the service's
+environment variables (the commented-out entry in `render.yaml` shows where).
+
+---
+
 ## What it does
 
 | Brief requirement | Where it lives in the app |

@@ -1,0 +1,25 @@
+# Render Blueprint — StockWise
+#
+# Setup: Render Dashboard → New → Blueprint → point at this GitHub repo.
+# Render reads this file and configures build, start, health check and env.
+services:
+  - type: web
+    name: stockwise
+    runtime: node
+    # Free plan: the filesystem is ephemeral, so the SQLite file is re-created
+    # and re-seeded (~200ms) on every restart/redeploy — no errors, demo data
+    # comes back automatically. To keep data across restarts, upgrade to a paid
+    # plan, attach a Disk (e.g. mounted at /var/data) and uncomment DB_PATH:
+    plan: free
+    # npm ci installs strictly from package-lock.json; --include=dev keeps
+    # TypeScript available for the build (NODE_ENV=production would otherwise
+    # strip devDependencies).
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # - key: DB_PATH
+      #   value: /var/data/stockwise.db
