@@ -92,6 +92,11 @@ Notes:
 - A Blueprint is read from the branch you select when creating it (or that the existing services
   track). If `render.yaml` was added on a feature branch, either select that branch or merge it
   into the branch Render watches, otherwise Render keeps reading the old file.
+- If the build fails with `npm error code EUSAGE ... The npm ci command can only install with an
+  existing package-lock.json`, the build ran in a directory that has no lockfile. There is no
+  `package.json` at the repo root any more, so a service created before the split (no **Root
+  Directory**) can no longer build: set **Root Directory** to `stockwise/backend` for the API and
+  `stockwise/frontend` for the UI, or delete the old service and re-apply this Blueprint.
 - Because the frontend server proxies the API, the browser never makes a cross-origin request in
   this setup. The API still sends CORS headers (`CORS_ORIGIN` defaults to `*`) so the UI can also
   be hosted elsewhere.
