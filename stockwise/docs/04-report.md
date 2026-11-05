@@ -95,8 +95,8 @@ A lightweight iterative process, appropriate to a one-person build:
 | Investigation | Interview, observation, document analysis, ledger reconstruction | [01](01-real-world-investigation.md) |
 | Requirements | Functional and non-functional requirements traceable to findings | §5 of doc 01 |
 | Design | Layered architecture, ERD, decision pipeline, formulas, API | [03](03-design.md) |
-| Implementation | Domain → analytics → services → API → UI, each layer tested | `src/`, `public/` |
-| Verification | Unit, integration, HTTP and browser smoke tests; seeded data review | `tests/`, `tools/` |
+| Implementation | Domain → analytics → services → API → UI, each layer tested | `backend/src/`, `frontend/` |
+| Verification | Unit, integration, HTTP and browser smoke tests; seeded data review | `backend/tests/`, `frontend/tests/`, `frontend/tools/` |
 | Evaluation | Compare delivered behaviour with the eight brief objectives | §9 below |
 
 **Tools:** TypeScript 5.9, Node.js 24, SQLite, `node:test`, Playwright (development-only browser
@@ -152,7 +152,7 @@ unchanged and no invoice exists.
 
 Weekly aggregation → exponential smoothing with a grid-searched α → capped and damped OLS trend →
 shrunk day-of-week factors → daily projection → residual σ → holdout MAPE. Every step is a pure
-function in `src/analytics/forecast.ts`, tested on flat, growing, seasonal, sparse and empty series.
+function in `backend/src/analytics/forecast.ts`, tested on flat, growing, seasonal, sparse and empty series.
 
 ### 5.3 Reorder decision
 
@@ -170,7 +170,7 @@ and a responsive layout that collapses to a single column on a phone.
 
 ## 6. Results
 
-All figures are from the seeded demo database (`npm start`), trading data through 19 October 2026,
+All figures are from the seeded demo database (`npm start` in `backend/`), trading data through 19 October 2026,
 90-day default analysis window.
 
 ### 6.1 Dashboard
@@ -265,15 +265,17 @@ best-selling audio and cable lines. The recommendation for `PulseBuds Pro` is 58
 
 ## 7. Testing
 
-`npm test` builds the project and runs 47 tests with Node's built-in test runner.
+`npm test` in `backend/` builds the project and runs 47 tests with Node's built-in test runner;
+`npm test` in `frontend/` runs its 4 server tests.
 
 | File | Tests | What is covered |
 | --- | --- | --- |
-| `tests/stock.test.ts` | 10 | Safety stock √L scaling, reorder point, days of cover, EOQ formula, order-up-to level, urgency thresholds, pack rounding, trigger gating, UTC dates |
-| `tests/forecast.test.ts` | 12 | Weekly aggregation, OLS trend, exponential smoothing, weekday factors, flat/growing/empty series, MAPE backtest, dense series construction, decision builder |
-| `tests/classification.test.ts` | 6 | ABC 80/95 boundaries, percentile interpolation, revenue ranking, velocity classes, dead stock, summary concentration |
-| `tests/sales.test.ts` | 9 | Sale atomicity, oversell rejection, partial-short rollback, duplicate merging, price overrides, invoice sequencing, validation, weighted average cost, adjustments |
-| `tests/api.test.ts` | 12 | Health, dashboard, products/insight, reorder plan, sale via HTTP, oversell 409, malformed JSON, stock receipt, settings persistence, 404/405, SPA shell, directory traversal |
+| `backend/tests/stock.test.ts` | 10 | Safety stock √L scaling, reorder point, days of cover, EOQ formula, order-up-to level, urgency thresholds, pack rounding, trigger gating, UTC dates |
+| `backend/tests/forecast.test.ts` | 12 | Weekly aggregation, OLS trend, exponential smoothing, weekday factors, flat/growing/empty series, MAPE backtest, dense series construction, decision builder |
+| `backend/tests/classification.test.ts` | 6 | ABC 80/95 boundaries, percentile interpolation, revenue ranking, velocity classes, dead stock, summary concentration |
+| `backend/tests/sales.test.ts` | 9 | Sale atomicity, oversell rejection, partial-short rollback, duplicate merging, price overrides, invoice sequencing, validation, weighted average cost, adjustments |
+| `backend/tests/api.test.ts` | 12 | Health, dashboard, products/insight, reorder plan, sale via HTTP, oversell 409, malformed JSON, stock receipt, settings persistence, 404/405, JSON-only 404 for non-API paths, CORS |
+| `frontend/tests/server.test.js` | 4 | App shell and assets served with correct content types, `/api/*` proxied to the backend, traversal blocked |
 
 Final result:
 
@@ -283,7 +285,7 @@ Final result:
 ℹ fail 0
 ```
 
-A browser smoke test (`tools/ui-check.cjs`, development only) loads all six views in headless
+A browser smoke test (`frontend/tools/ui-check.cjs`, development only) loads all six views in headless
 Chromium, opens the policy and stock dialogs, and asserts zero console errors and zero failed
 requests.
 
@@ -402,25 +404,35 @@ with.
 
 ## Appendix A — Running the system
 
+Two processes, one folder each:
+
 ```bash
-npm install
-npm run build
-npm start          # http://localhost:3000
+# backend API — http://localhost:3001
+cd stockwise/backend
+npm install && npm run build
+npm start
 npm test           # 47 tests
 npm run seed -- --reset
+
+# frontend UI — http://localhost:3000 (proxies /api to the backend)
+cd stockwise/frontend
+npm start
+npm test           # 4 tests
 ```
 
-`data/stockwise.db` is created and seeded automatically on first start. Node 24+ is required.
+`backend/data/stockwise.db` is created and seeded automatically on first start. Node 24+ is required
+for the backend; the frontend only needs Node 20+.
 
 ## Appendix B — Source map
 
 | Path | Contents |
 | --- | --- |
-| `src/domain/` | money, stock mathematics, classification, shared types and errors |
-| `src/analytics/` | forecasting engine, decision builder |
-| `src/services/` | sales, products, suppliers, analytics, settings |
-| `src/db/` | schema, connection/transactions, seed simulator |
-| `src/http/`, `src/server.ts` | router, API routes, static files, server |
-| `public/` | single-page UI, charts, formatters |
-| `tests/` | 47 automated tests |
+| `backend/src/domain/` | money, stock mathematics, classification, shared types and errors |
+| `backend/src/analytics/` | forecasting engine, decision builder |
+| `backend/src/services/` | sales, products, suppliers, analytics, settings |
+| `backend/src/db/` | schema, connection/transactions, seed simulator |
+| `backend/src/http/`, `backend/src/server.ts` | router, API routes, server |
+| `frontend/` | single-page UI, charts, formatters, static/proxy server |
+| `backend/tests/` | 47 automated tests |
+| `frontend/tests/` | 4 server tests |
 | `docs/` | investigation, programming challenge, design, report |

@@ -1,14 +1,30 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
 import { Router, readJsonBody, sendError, sendJson, isJsonReply } from './http/router.js';
 import { registerApiRoutes } from './http/api.js';
-import { serveStatic } from './http/static.js';
 import type { Db } from './db/connection.js';
 
-// dist/src/server.js -> project root is two levels up.
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const publicDirectory = resolve(projectRoot, 'public');
+const DEFAULT_PORT = 3001;
+
+// The browser UI is served from its own origin (the `frontend` folder), so the API has to
+// allow cross-origin calls. `CORS_ORIGIN` accepts a comma-separated allowlist; unset means
+// any origin, which is fine for this read-mostly demo API with no cookies or credentials.
+const corsOrigins = (process.env.CORS_ORIGIN ?? '*')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+function applyCors(req: IncomingMessage, res: ServerResponse): void {
+  const origin = req.headers.origin;
+  if (corsOrigins.includes('*')) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (origin && corsOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '600');
+}
 
 export interface ServerOptions {
   db: Db;
@@ -29,6 +45,13 @@ export function createAppServer(options: ServerOptions) {
       const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
       pathname = url.pathname;
       res.setHeader('X-Content-Type-Options', 'nosniff');
+      applyCors(req, res);
+
+      if (method === 'OPTIONS') {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
 
       if (pathname.startsWith('/api/')) {
         const matched = router.match(method, pathname);
@@ -51,10 +74,13 @@ export function createAppServer(options: ServerOptions) {
         return;
       }
 
-      if (!serveStatic(publicDirectory, pathname, res)) {
-        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-        res.end('Not found');
-      }
+      // This service only speaks JSON; the UI lives in the sibling `frontend` folder.
+      sendJson(res, 404, {
+        error: {
+          code: 'not_found',
+          message: `${pathname} is not an API route. The StockWise UI is served by the frontend.`,
+        },
+      });
     } catch (error) {
       sendError(res, error);
     } finally {
@@ -69,7 +95,7 @@ export function createAppServer(options: ServerOptions) {
 
 export function startServer(options: ServerOptions): Promise<{ port: number; close: () => Promise<void> }> {
   const server = createAppServer(options);
-  const port = options.port ?? 3000;
+  const port = options.port ?? DEFAULT_PORT;
   const host = options.host ?? '0.0.0.0';
   return new Promise((resolvePromise, reject) => {
     server.once('error', reject);

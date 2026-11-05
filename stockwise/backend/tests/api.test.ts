@@ -212,15 +212,22 @@ test('unknown routes and wrong methods are reported properly', async () => {
   assert.equal(wrongMethod.status, 405);
 });
 
-test('the single-page app shell is served as HTML', async () => {
+test('non-API paths are not served by the API', async () => {
   const response = await request('/');
-  assert.equal(response.status, 200);
-  assert.match(response.contentType ?? '', /text\/html/);
-  assert.match(response.body, /StockWise/);
-  assert.match(response.body, /js\/app\.js/);
+  assert.equal(response.status, 404);
+  assert.equal(response.body.error.code, 'not_found');
+  assert.match(response.contentType ?? '', /application\/json/);
 });
 
-test('static serving rejects directory traversal', async () => {
-  const response = await request('/../package.json');
-  assert.ok([403, 404].includes(response.status), `expected traversal to be blocked, got ${response.status}`);
+test('the API answers CORS so the separate frontend can call it', async () => {
+  const preflight = await fetch(`${baseUrl}/api/health`, {
+    method: 'OPTIONS',
+    headers: { Origin: 'http://localhost:3000', 'Access-Control-Request-Method': 'GET' },
+  });
+  assert.equal(preflight.status, 204);
+  assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
+
+  const health = await fetch(`${baseUrl}/api/health`, { headers: { Origin: 'http://localhost:3000' } });
+  assert.equal(health.status, 200);
+  assert.equal(health.headers.get('access-control-allow-origin'), '*');
 });

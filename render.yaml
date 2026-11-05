@@ -1,11 +1,16 @@
-# Render Blueprint — StockWise
+# Render Blueprint — StockWise (backend API + frontend UI as two services)
 #
 # Setup: Render Dashboard → New → Blueprint → point at this GitHub repo.
-# Render reads this file and configures build, start, health check and env.
+# Render reads this file, creates both services and wires the UI to the API.
+#
+# Deploy order note: the UI resolves API_TARGET from the API service's hostname, so the
+# first build of `stockwise-ui` waits until `stockwise-api` has been created.
 services:
   - type: web
-    name: stockwise
+    name: stockwise-api
     runtime: node
+    # The backend lives in stockwise/backend, so every command runs from there.
+    rootDir: stockwise/backend
     # Free plan: the filesystem is ephemeral, so the SQLite file is re-created
     # and re-seeded (~200ms) on every restart/redeploy — no errors, demo data
     # comes back automatically. To keep data across restarts, upgrade to a paid
@@ -23,3 +28,23 @@ services:
         value: production
       # - key: DB_PATH
       #   value: /var/data/stockwise.db
+
+  - type: web
+    name: stockwise-ui
+    runtime: node
+    # The frontend has no dependencies and no build step: it serves the static
+    # files and proxies /api/* to the API service above.
+    rootDir: stockwise/frontend
+    plan: free
+    buildCommand: echo "no build step"
+    startCommand: node server.js
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_TARGET
+        fromService:
+          type: web
+          name: stockwise-api
+          property: host

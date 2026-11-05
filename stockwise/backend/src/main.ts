@@ -9,7 +9,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const databasePath = process.env.DB_PATH
   ? resolve(process.env.DB_PATH)
   : resolve(projectRoot, 'data/stockwise.db');
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 3001);
 const host = process.env.HOST ?? '0.0.0.0';
 
 const db = openDatabase(databasePath);
@@ -23,7 +23,7 @@ if (!isSeeded(db)) {
 }
 
 const server = await startServer({ db, port, host, verbose: process.env.HTTP_LOG === 'true' });
-console.log(`StockWise running at http://localhost:${server.port} (database: ${databasePath})`);
+console.log(`StockWise API listening on http://localhost:${server.port} (database: ${databasePath})`);
 
 const shutdown = async (signal: string) => {
   console.log(`\n[${signal}] shutting down`);

@@ -1,5 +1,7 @@
-/* Dev-only browser smoke check. Run with: node tools/ui-check.cjs
-   Requires Playwright: npm i -D playwright && npx playwright install chromium */
+/* Dev-only browser smoke check. Run from stockwise/frontend:
+     BASE_URL=http://127.0.0.1:3000 node tools/ui-check.cjs
+   Requires Playwright: npm i -D playwright && npx playwright install chromium.
+   Screenshots are written to stockwise/artifacts/. */
 const { chromium } = (() => {
   try {
     return require('playwright');
@@ -11,7 +13,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 
 const BASE = process.env.BASE_URL ?? 'http://127.0.0.1:3000';
-const OUT = path.join(process.cwd(), 'artifacts');
+const OUT = path.resolve(__dirname, '../../artifacts');
 fs.mkdirSync(OUT, { recursive: true });
 
 const pages = [

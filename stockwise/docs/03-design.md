@@ -13,16 +13,21 @@
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ Browser (public/)                                                    │
-│  index.html · styles.css · js/app.js (hash router)                    │
-│  js/views/*  dashboard · products · sales · analytics · reorder ·     │
+│ Browser (frontend/)                                                  │
+│  index.html · styles.css · js/app.js (hash router)                   │
+│  js/views/*  dashboard · products · sales · analytics · reorder ·    │
 │              suppliers                                               │
-│  js/charts.js (SVG) · js/api.js (fetch) · js/ui.js · js/format.js     │
+│  js/charts.js (SVG) · js/api.js (fetch) · js/ui.js · js/format.js    │
+└──────────────────────────────┬───────────────────────────────────────┘
+                               │ same-origin fetch → /api/*
+┌──────────────────────────────▼───────────────────────────────────────┐
+│ frontend/server.js                                                   │
+│  static files + reverse proxy (zero dependencies)                    │
 └──────────────────────────────┬───────────────────────────────────────┘
                                │ JSON / HTTP
 ┌──────────────────────────────▼───────────────────────────────────────┐
-│ HTTP layer (src/http, src/server.ts)                                 │
-│  Router (regex routes) · body parsing · ApiError → JSON · static     │
+│ backend HTTP layer (src/http, src/server.ts)                         │
+│  Router (regex routes) · body parsing · ApiError → JSON · CORS       │
 └──────────────────────────────┬───────────────────────────────────────┘
                                │ plain objects
 ┌──────────────────────────────▼───────────────────────────────────────┐
@@ -51,8 +56,8 @@ tested without a database.
 | Analytics | `src/analytics/{forecast,decision}.ts` | Demand forecasting, per-product decision assembly |
 | Services | `src/services/*.ts` | Use cases, validation, transactions, row mapping |
 | Persistence | `src/db/{schema,connection,seed}.ts` | Schema, pragmas, transaction helper, demo simulator |
-| HTTP | `src/http/{router,api,static}.ts`, `src/server.ts` | Routing, JSON, errors, static files |
-| UI | `public/js/**` | Views, formatting, charts, API client |
+| HTTP | `src/http/{router,api}.ts`, `src/server.ts` | Routing, JSON, errors, CORS |
+| UI | `frontend/js/**` | Views, formatting, charts, API client |
 
 ---
 
@@ -284,7 +289,8 @@ below 15%; sparse or declining items are 30–50% and are labelled medium/low co
 
 ## 3.6 API
 
-Base URL `http://localhost:3000`. All responses JSON; money in cents.
+Base URL `http://localhost:3001` — the UI's `frontend/server.js` proxies `/api/*` from
+`http://localhost:3000`. All responses JSON; money in cents.
 
 | Method | Route | Body / query | Returns |
 | --- | --- | --- | --- |
@@ -364,7 +370,7 @@ scroll horizontally on small screens, `aria-live` on the view container, number 
 | Test suite | 47 tests, build + run | ~0.7 s |
 
 **Security:** every SQL value is a bound parameter (no string concatenation); static file paths are
-resolved and must stay inside `public/`; HTML output is escaped in the browser; request bodies are
+resolved by `frontend/server.js` and must stay inside `frontend/`; HTML output is escaped in the browser; request bodies are
 size-limited; the server binds to `0.0.0.0` for the demo but has no auth, and the README says so.
 
 ---

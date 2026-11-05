@@ -1,8 +1,8 @@
 node_modules/
 dist/
-data/*.db
-data/*.db-wal
-data/*.db-shm
+**/data/*.db
+**/data/*.db-wal
+**/data/*.db-shm
 *.log
 .DS_Store
 logs/

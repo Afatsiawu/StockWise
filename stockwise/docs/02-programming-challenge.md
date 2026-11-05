@@ -82,8 +82,8 @@ Why each piece:
   that async database drivers introduce. Concurrency is handled by SQLite's locking, not by
   application-level coordination.
 - **`node:test`** gives unit, integration and HTTP tests with no framework.
-- **Standard library covers the rest**: `node:http` for the API, `node:fs` for static files,
-  `node:path` for safe resolution.
+- **Standard library covers the rest**: `node:http` for the API and for the UI's static server,
+  `node:fs` and `node:path` for safe file resolution.
 
 ### SQLite
 
@@ -100,8 +100,9 @@ Why each piece:
 
 The UI is six views of tables, forms and three chart types. A build step (React/Vite) would add
 hundreds of dependencies and a second toolchain to a system whose value is in its data model. The
-front end is ES modules, template literals and hand-written SVG, served as static files by the
-same Node process. It is a deliberate trade: fewer dependencies, more explicit code.
+front end is ES modules, template literals and hand-written SVG, shelved in its own `frontend/`
+folder and served by a forty-line Node script that also proxies `/api/*` to the backend. It is a
+deliberate trade: fewer dependencies, more explicit code, and the two halves stay independent.
 
 ## 2.4 The paradigm: functional core, imperative shell
 
@@ -271,9 +272,9 @@ test('a partially short sale rolls back completely', () => {
 
 - **Type checking:** `tsc --strict --noUncheckedIndexedAccess` passes with no `any` escape hatches
   in the domain or analytics layers.
-- **47 automated tests pass** in under a second (see [04-report.md](04-report.md#7-testing)):
-  formulas, classification, forecasting edge cases, transaction rollback, HTTP API, static-file
-  security.
+- **51 automated tests pass** in under a second (47 backend, 4 frontend — see
+  [04-report.md](04-report.md#7-testing)): formulas, classification, forecasting edge cases,
+  transaction rollback, HTTP API, proxying and static-file security.
 - **Zero runtime dependencies**, so `npm install && npm start` works on a clean Node 24 machine.
 - **The forecast is accurate enough to be useful:** mean backtest MAPE of **27%** across the 26
   sellable products on weekly demand, with flat, high-volume products around 12–16%.
