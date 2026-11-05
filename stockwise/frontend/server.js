@@ -5,6 +5,8 @@
  * backend, so the browser still talks to a single origin. No dependencies — Node only.
  *
  *   PORT=3000 API_TARGET=http://127.0.0.1:3001 npm start
+ *
+ * In production (Render) API_TARGET is the API's public URL, injected from the service.
  */
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer, request as httpRequest } from 'node:http';
@@ -108,12 +110,13 @@ function proxyToApi(target, req, res) {
 }
 
 /**
- * Accepts a full URL or a bare host (e.g. a Render service hostname).
+ * Accepts a full URL (https://api.example.com) or a bare host/host:port, which is treated as
+ * plain http — internal hostnames such as a Render private-network name are not TLS endpoints.
  * @param {string} target
  * @returns {URL}
  */
 function parseApiTarget(target) {
-  return new URL(/^https?:\/\//i.test(target) ? target : `https://${target}`);
+  return new URL(/^https?:\/\//i.test(target) ? target : `http://${target}`);
 }
 
 /**

@@ -85,8 +85,13 @@ Notes:
 - The API runs `node dist/src/main.js` and binds `0.0.0.0` on Render's `PORT`; Node stays on
   `24.x` because of the bounded `engines.node: ">=24 <25"` — the upper bound stops Render
   silently moving to a future major that `node:sqlite` may not match.
-- The UI gets `API_TARGET` from the API service hostname (`fromService`), so the two services are
-  wired together without hard-coding a URL. `API_TARGET` accepts a bare host or a full URL.
+- The UI gets `API_TARGET` from the API's **public** URL (`fromService` + `RENDER_EXTERNAL_URL`),
+  so the two services are wired together without hard-coding an address. Free web services cannot
+  receive private-network traffic, so the proxy never uses the internal hostname. `API_TARGET`
+  accepts a full URL or a bare host.
+- A Blueprint is read from the branch you select when creating it (or that the existing services
+  track). If `render.yaml` was added on a feature branch, either select that branch or merge it
+  into the branch Render watches, otherwise Render keeps reading the old file.
 - Because the frontend server proxies the API, the browser never makes a cross-origin request in
   this setup. The API still sends CORS headers (`CORS_ORIGIN` defaults to `*`) so the UI can also
   be hosted elsewhere.
