@@ -13,7 +13,38 @@
   </head>
   <body>
     <a class="skip-link" href="#view">Skip to content</a>
-    <div class="app">
+    <div id="login-screen" class="login-screen" style="display:flex">
+      <div class="login-card">
+        <div class="brand" style="justify-content:center;margin-bottom:6px">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="30" height="30">
+              <rect width="32" height="32" rx="8" fill="#4f46e5" />
+              <path d="M8 21V11h4v10H8Zm6 0V7h4v14h-4Zm6 0v-7h4v7h-4Z" fill="white" />
+            </svg>
+          </span>
+          <div>
+            <strong>StockWise</strong>
+            <small>Decision support</small>
+          </div>
+        </div>
+        <h1>Sign in</h1>
+        <p class="muted" style="margin:4px 0 18px">Sign in to access the inventory dashboard.</p>
+        <form id="login-form">
+          <div class="field">
+            <label for="login-username">Username</label>
+            <input id="login-username" name="username" type="text" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+          <p id="login-error" class="login-error" hidden></p>
+          <button class="primary-button" type="submit" style="width:100%">Sign in</button>
+        </form>
+        <p class="tiny" style="margin-top:14px;text-align:center">Demo login: stockwise-admin / stock-admin-password</p>
+      </div>
+    </div>
+    <div class="app" style="display:none">
       <aside class="sidebar" aria-label="Main navigation">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">
@@ -49,6 +80,7 @@
         </nav>
         <div class="sidebar-foot">
           <button class="ghost-button light" id="settings-button" type="button">⚙ Policy settings</button>
+          <button class="ghost-button light" id="logout-button" type="button">⎋ Log out</button>
           <p class="tiny">Demo shop · electronics &amp; accessories</p>
         </div>
       </aside>

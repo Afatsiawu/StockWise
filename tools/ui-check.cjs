@@ -38,6 +38,13 @@ const pages = [
   );
 
   let failures = 0;
+  // Log in first (the app is now gated behind a login screen).
+  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+  await page.fill('#login-username', 'stockwise-admin');
+  await page.fill('#login-password', 'stock-admin-password');
+  await page.click('#login-form button[type="submit"]');
+  await page.waitForTimeout(400);
+
   for (const entry of pages) {
     await page.goto(`${BASE}/${entry.hash}`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(300);

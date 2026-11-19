@@ -11,11 +11,45 @@ import * as suppliersView from './views/suppliers.js';
 const viewRoot = document.getElementById('view');
 const windowSelect = document.getElementById('window-select');
 const dataThrough = document.getElementById('data-through');
+const appRoot = document.querySelector('.app');
+const loginScreen = document.getElementById('login-screen');
+
+const AUTH_KEY = 'stockwise.auth';
+function isAuthenticated() {
+  try {
+    return !!localStorage.getItem(AUTH_KEY);
+  } catch {
+    return false;
+  }
+}
+function currentUser() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? (JSON.parse(raw).username ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+function setAuth(username) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify({ username, at: Date.now() }));
+}
+function clearAuth() {
+  localStorage.removeItem(AUTH_KEY);
+}
+function showLogin() {
+  if (appRoot) appRoot.style.display = 'none';
+  if (loginScreen) loginScreen.style.display = 'flex';
+}
+function showApp() {
+  if (loginScreen) loginScreen.style.display = 'none';
+  if (appRoot) appRoot.style.display = '';
+}
 
 const state = {
   windowDays: Number(localStorage.getItem('stockwise.window') ?? 90) || 90,
   settings: null,
   renderToken: 0,
+  booted: false,
 };
 
 const ctx = {
@@ -64,6 +98,10 @@ function setActiveNav(name) {
 }
 
 async function renderRoute() {
+  if (!isAuthenticated()) {
+    showLogin();
+    return;
+  }
   const route = parseRoute();
   const token = ++state.renderToken;
   setActiveNav(route.name);
@@ -192,7 +230,37 @@ function openSettingsModal() {
   });
 }
 
-async function bootstrap() {
+function attachLoginHandler() {
+  const form = document.getElementById('login-form');
+  if (!form || form.dataset.bound === '1') return;
+  form.dataset.bound = '1';
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const username = document.getElementById('login-username')?.value.trim() ?? '';
+    const password = document.getElementById('login-password')?.value ?? '';
+    const error = document.getElementById('login-error');
+    if (username !== 'stockwise-admin' || password !== 'stock-admin-password') {
+      if (error) {
+        error.textContent = 'Invalid username or password.';
+        error.hidden = false;
+      }
+      return;
+    }
+    setAuth(username);
+    if (error) error.hidden = true;
+    showApp();
+    if (!state.booted) {
+      state.booted = true;
+      bootstrapApp();
+    } else {
+      if (!window.location.hash) window.location.hash = '#/dashboard';
+      else renderRoute();
+    }
+  });
+}
+
+async function bootstrapApp() {
+  state.booted = true;
   windowSelect.value = String(state.windowDays);
   windowSelect.addEventListener('change', () => {
     state.windowDays = Number(windowSelect.value);
@@ -205,7 +273,18 @@ async function bootstrap() {
     renderRoute();
   });
   document.getElementById('settings-button').addEventListener('click', openSettingsModal);
-  window.addEventListener('hashchange', renderRoute);
+  const logoutButton = document.getElementById('logout-button');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      clearAuth();
+      window.location.hash = '';
+      showLogin();
+    });
+  }
+  window.addEventListener('hashchange', () => {
+    if (isAuthenticated()) renderRoute();
+    else showLogin();
+  });
 
   try {
     const settings = await api.settings();
@@ -226,6 +305,19 @@ async function bootstrap() {
     window.location.hash = '#/dashboard';
   } else {
     renderRoute();
+  }
+}
+
+function bootstrap() {
+  attachLoginHandler();
+  if (isAuthenticated()) {
+    showApp();
+    bootstrapApp();
+  } else {
+    showLogin();
+    window.addEventListener('hashchange', () => {
+      if (!isAuthenticated()) showLogin();
+    });
   }
 }
 

@@ -55,6 +55,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ---------- Layout ---------- */
 .app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
 
+.login-screen {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #0b1220 0%, #1e2b45 100%);
+}
+.login-card {
+  width: min(400px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 28px;
+  box-shadow: 0 30px 70px -30px rgba(15, 23, 42, 0.55);
+}
+.login-card h1 { font-size: 1.4rem; margin-bottom: 2px; }
+.login-error {
+  background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
+  border-radius: 9px; padding: 8px 10px; font-size: 0.82rem; margin-bottom: 12px;
+}
+
 .sidebar {
   background: #0b1220;
   color: #cbd5e1;
