@@ -39,7 +39,7 @@ export async function render(container, ctx) {
   }
 
   const productById = new Map(products.map((product) => [product.id, product]));
-  let lines = [{ productId: products[0]?.id ?? 0, quantity: 1, unitPriceCents: products[0]?.unitPriceCents ?? 0 }];
+  let lines = [];
 
   container.innerHTML = `
     ${pageHead({
@@ -293,8 +293,7 @@ export async function render(container, ctx) {
   const form = container.querySelector('#sale-form');
   form.addEventListener('reset', () => {
     setTimeout(() => {
-      const first = products[0];
-      lines = first ? [{ productId: first.id, quantity: 1, unitPriceCents: first.unitPriceCents }] : [];
+      lines = [];
       paintLines();
     }, 0);
   });
