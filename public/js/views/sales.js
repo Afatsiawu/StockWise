@@ -69,6 +69,19 @@ export async function render(container, ctx) {
             <label for="notes">Note (optional)</label>
             <input id="notes" name="notes" placeholder="e.g. warranty extension" />
           </div>
+          <div class="field">
+            <label>Voice sale entry</label>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <button type="button" class="ghost-button" id="voice-toggle">🎤 Start voice</button>
+              <span id="voice-status" class="muted small">Idle</span>
+            </div>
+            <textarea id="voice-transcript" rows="3" placeholder="Spoken sale will appear here…" style="margin-top:8px"></textarea>
+            <div class="form-actions" style="justify-content:flex-start;margin-top:6px">
+              <button type="button" class="ghost-button" id="voice-apply">Apply transcript</button>
+              <button type="button" class="ghost-button" id="voice-clear">Clear</button>
+            </div>
+            <p class="hint small muted" style="margin-top:6px">Example: "2 PulseBuds at 150, 1 cable 20". Review the transcript, then apply.</p>
+          </div>
           <div class="form-actions">
             <button type="reset" class="ghost-button">Clear</button>
             <button type="submit" class="primary-button">Record sale</button>
@@ -161,6 +174,84 @@ export async function render(container, ctx) {
     paintLines();
   });
 
+  // ---------- Voice sale entry ----------
+  const voiceToggle = container.querySelector('#voice-toggle');
+  const voiceStatus = container.querySelector('#voice-status');
+  const voiceTranscript = container.querySelector('#voice-transcript');
+  let recognition = null;
+  let listening = false;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event) => {
+      let finalText = '';
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += `${transcript} `;
+        else interim += transcript;
+      }
+      if (finalText.trim()) {
+        voiceTranscript.value = `${voiceTranscript.value} ${finalText}`.trim();
+      }
+      voiceStatus.textContent = interim ? `Listening: ${interim}` : 'Listening…';
+    };
+    recognition.onerror = (event) => {
+      voiceStatus.textContent = `Error: ${event.error}`;
+    };
+    recognition.onend = () => {
+      if (listening) {
+        try { recognition.start(); } catch (e) { /* ignore */ }
+      } else {
+        voiceStatus.textContent = 'Idle';
+      }
+    };
+  } else {
+    voiceStatus.textContent = 'Speech recognition not supported in this browser';
+  }
+
+  voiceToggle.addEventListener('click', () => {
+    if (!recognition) {
+      toast('Speech recognition is not supported in this browser', 'error');
+      return;
+    }
+    if (!listening) {
+      listening = true;
+      voiceToggle.textContent = '⏹ Stop voice';
+      voiceStatus.textContent = 'Listening…';
+      try { recognition.start(); } catch (e) { /* ignore */ }
+    } else {
+      listening = false;
+      voiceToggle.textContent = '🎤 Start voice';
+      try { recognition.stop(); } catch (e) { /* ignore */ }
+      voiceStatus.textContent = 'Idle';
+    }
+  });
+
+  container.querySelector('#voice-clear').addEventListener('click', () => {
+    voiceTranscript.value = '';
+  });
+
+  container.querySelector('#voice-apply').addEventListener('click', () => {
+    const transcript = voiceTranscript.value.trim();
+    if (!transcript) {
+      toast('No transcript to apply', 'error');
+      return;
+    }
+    const parsed = parseVoiceSale(transcript, products);
+    if (parsed.length === 0) {
+      toast('Could not match any products in the transcript', 'error');
+      return;
+    }
+    lines = lines.concat(parsed);
+    paintLines();
+    toast(`Applied ${parsed.length} line(s) from voice`, 'success');
+  });
+
   const paintSales = (filter = '') => {
     const term = filter.trim().toLowerCase();
     const filtered = sales.filter(
@@ -233,6 +324,47 @@ export async function render(container, ctx) {
   });
 
   paintLines();
+}
+
+function parseVoiceSale(text, products) {
+  const segments = text.split(/,|;|\band\b|\n/i).map((s) => s.trim()).filter(Boolean);
+  const result = [];
+  for (const segment of segments) {
+    const qtyMatch = segment.match(/(\d+)/);
+    const quantity = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10)) : 1;
+
+    let priceCents = null;
+    const priceMatch = segment.match(/(?:at|for|price|cost)\s*(\d+(?:\.\d{1,2})?)/i);
+    if (priceMatch) priceCents = Math.round(parseFloat(priceMatch[1]) * 100);
+
+    const namePart = segment
+      .replace(/\d+(?:\.\d{1,2})?/g, ' ')
+      .replace(/\b(at|for|price|cost)\b/gi, ' ')
+      .trim();
+
+    let best = null;
+    let bestScore = 0;
+    const segWords = namePart.toLowerCase().split(/\s+/).filter((w) => w.length >= 2);
+    for (const product of products) {
+      const productWords = product.name.toLowerCase().split(/\s+/);
+      let score = 0;
+      for (const word of segWords) {
+        if (productWords.some((pw) => pw.includes(word) || word.includes(pw))) score += 1;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        best = product;
+      }
+    }
+    if (best && bestScore > 0) {
+      result.push({
+        productId: best.id,
+        quantity,
+        unitPriceCents: priceCents ?? best.unitPriceCents,
+      });
+    }
+  }
+  return result;
 }
 
 function openSaleDetail(sale) {
